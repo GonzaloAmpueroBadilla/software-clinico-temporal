@@ -1,0 +1,13 @@
+### 1. CREAR UN NUEVO PACIENTE
+POST http://localhost:3000/patients
+Content-Type: application/json
+
+{
+  "name": "Carlos Fuentes",
+  "rut": "9876543-2",
+  "birth_date": "1990-05-15"
+}
+
+###
+### 2. OBTENER TODOS LOS PACIENTES
+GET http://localhost:3000/patients
