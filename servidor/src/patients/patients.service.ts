@@ -30,9 +30,8 @@ export class PatientsService {
   }
 
   // --- OBTENER UN PACIENTE POR SU ID ---
-  findOne(id: string) {
-    // Busca un paciente cuyo 'id' coincida con el que se pasó.
-    return this.patientRepository.findOneBy({ id });
+  findOne(uuid: string) { // Ahora recibe un string (el uuid)
+  return this.patientRepository.findOneBy({ uuid }); // Busca por la columna uuid
   }
 
   // --- ACTUALIZAR UN PACIENTE ---

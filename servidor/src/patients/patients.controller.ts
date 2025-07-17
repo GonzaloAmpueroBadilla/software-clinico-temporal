@@ -25,9 +25,9 @@ export class PatientsController {
   }
 
   // Maneja peticiones GET a /patients/:id (ej: /patients/123-456-789)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.patientsService.findOne(id);
+@Get(':id') // La URL sigue siendo /patients/:id, pero ahora 'id' será un UUID
+findOne(@Param('id') id: string) {
+  return this.patientsService.findOne(id); // Pasamos el id como string
   }
 
   // Maneja peticiones PATCH a /patients/:id

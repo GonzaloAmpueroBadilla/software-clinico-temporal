@@ -1,13 +1,45 @@
-### 1. CREAR UN NUEVO PACIENTE
+### ---------------------------------
+### PACIENTES
+### ---------------------------------
+
+### CREAR UN NUEVO PACIENTE
+# @name createPatient
 POST http://localhost:3000/patients
 Content-Type: application/json
 
 {
-  "name": "Carlos Fuentes",
-  "rut": "9876543-2",
-  "birth_date": "1990-05-15"
+  "name": "Ricardo Lagos",
+  "rut": "5555555-5",
+  "birth_date": "1938-03-02"
 }
 
-###
-### 2. OBTENER TODOS LOS PACIENTES
-GET http://localhost:3000/patients
+### OBTENER UN PACIENTE POR SU UUID PÚBLICO
+GET http://localhost:3000/patients/{{createPatient.response.body.uuid}}
+
+
+### ---------------------------------
+### DIAGNÓSTICOS
+### ---------------------------------
+
+### CREAR UN DIAGNÓSTICO
+# @name createDiagnosis
+POST http://localhost:3000/diagnoses
+Content-Type: application/json
+
+{
+  "code": "I10",
+  "name": "Hipertensión esencial (primaria)"
+}
+
+### ---------------------------------
+### HOSPITALIZACIONES
+### ---------------------------------
+
+### CREAR UNA HOSPITALIZACIÓN USANDO LOS IDs ANTERIORES
+POST http://localhost:3000/admissions
+Content-Type: application/json
+
+{
+  "patientId": {{createPatient.response.body.id}},
+  "diagnosisId": "{{createDiagnosis.response.body.id}}"
+}

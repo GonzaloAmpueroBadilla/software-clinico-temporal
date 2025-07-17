@@ -18,6 +18,8 @@ async function bootstrap() {
   // 2. HEMOS AÑADIDO ESTA LÍNEA PARA USAR EL LOGGER
   app.use(logger);
 
+  app.enableCors(); // Permite solicitudes desde otros orígenes (CORS)
+
   await app.listen(3000);
 }
 bootstrap();

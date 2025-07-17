@@ -9,5 +9,6 @@ import { Patient } from './entities/patient.entity'; // <-- 2. IMPORTAR LA ENTID
   imports: [TypeOrmModule.forFeature([Patient])],
   controllers: [PatientsController],
   providers: [PatientsService],
+  exports: [TypeOrmModule], // <-- 4. EXPORTAR TypeOrmModule para que otros módulos puedan usar la entidad
 })
 export class PatientsModule {}
