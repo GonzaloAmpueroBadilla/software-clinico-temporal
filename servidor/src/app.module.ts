@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PatientsModule } from './patients/patients.module';
 import { DiagnosesModule } from './diagnoses/diagnoses.module';
 import { AdmissionsModule } from './admissions/admissions.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,6 +30,10 @@ import { AdmissionsModule } from './admissions/admissions.module';
       }),
       inject: [ConfigService],
     }),
+
+    UsersModule,
+
+    AuthModule,
   ],
   controllers: [],
   providers: [],

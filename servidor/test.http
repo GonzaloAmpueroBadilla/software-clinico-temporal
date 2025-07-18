@@ -43,3 +43,28 @@ Content-Type: application/json
   "patientId": {{createPatient.response.body.id}},
   "diagnosisId": "{{createDiagnosis.response.body.id}}"
 }
+
+### ---------------------------------
+### AUTENTICACIÓN
+### ---------------------------------
+
+### REGISTRAR UN NUEVO USUARIO
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "doctor.prueba@clinica.cl",
+  "password": "passwordSegura123",
+  "full_name": "Dr. Juan Pérez",
+  "role": "doctor"
+}
+
+###
+### INICIAR SESIÓN
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "doctor.prueba@clinica.cl",
+  "password": "passwordSegura123"
+}
