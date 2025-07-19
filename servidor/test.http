@@ -1,66 +1,6 @@
-### ---------------------------------
-### PACIENTES
-### ---------------------------------
-
-### CREAR UN NUEVO PACIENTE
-# @name createPatient
-POST http://localhost:3000/patients
-Content-Type: application/json
-
-{
-  "name": "Ricardo Lagos",
-  "rut": "5555555-5",
-  "birth_date": "1938-03-02"
-}
-
-### OBTENER UN PACIENTE POR SU UUID PÚBLICO
-GET http://localhost:3000/patients/{{createPatient.response.body.uuid}}
-
-
-### ---------------------------------
-### DIAGNÓSTICOS
-### ---------------------------------
-
-### CREAR UN DIAGNÓSTICO
-# @name createDiagnosis
-POST http://localhost:3000/diagnoses
-Content-Type: application/json
-
-{
-  "code": "I10",
-  "name": "Hipertensión esencial (primaria)"
-}
-
-### ---------------------------------
-### HOSPITALIZACIONES
-### ---------------------------------
-
-### CREAR UNA HOSPITALIZACIÓN USANDO LOS IDs ANTERIORES
-POST http://localhost:3000/admissions
-Content-Type: application/json
-
-{
-  "patientId": {{createPatient.response.body.id}},
-  "diagnosisId": "{{createDiagnosis.response.body.id}}"
-}
-
-### ---------------------------------
-### AUTENTICACIÓN
-### ---------------------------------
-
-### REGISTRAR UN NUEVO USUARIO
-POST http://localhost:3000/auth/signup
-Content-Type: application/json
-
-{
-  "email": "doctor.prueba@clinica.cl",
-  "password": "passwordSegura123",
-  "full_name": "Dr. Juan Pérez",
-  "role": "doctor"
-}
-
 ###
-### INICIAR SESIÓN
+### INICIAR SESIÓN (Guarda el token)
+# @name login
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
@@ -68,3 +8,10 @@ Content-Type: application/json
   "email": "doctor.prueba@clinica.cl",
   "password": "passwordSegura123"
 }
+
+###
+### OBTENER PACIENTES (Usa el token)
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:3000/patients
+Authorization: Bearer {{token}}
