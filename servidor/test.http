@@ -1,6 +1,20 @@
+### ---------------------------------
+### AUTENTICACIÓN
+### ---------------------------------
+
+### REGISTRAR UN NUEVO USUARIO
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "doctor.prueba@clinica.cl",
+  "password": "passwordSegura123",
+  "full_name": "Dr. Juan Pérez",
+  "role": "doctor"
+}
+
 ###
-### INICIAR SESIÓN (Guarda el token)
-# @name login
+### INICIAR SESIÓN
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
@@ -9,9 +23,14 @@ Content-Type: application/json
   "password": "passwordSegura123"
 }
 
-###
-### OBTENER PACIENTES (Usa el token)
-@token = {{login.response.body.access_token}}
+### ---------------------------------
+### PACIENTES (Requiere token)
+### ---------------------------------
+# @name login
+# POST http://localhost:3000/auth/signin
+# ...
 
-GET http://localhost:3000/patients
-Authorization: Bearer {{token}}
+# @token = {{login.response.body.access_token}}
+
+# GET http://localhost:3000/patients
+# Authorization: Bearer {{token}}

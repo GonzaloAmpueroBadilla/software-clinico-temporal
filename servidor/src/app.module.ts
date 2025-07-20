@@ -4,15 +4,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PatientsModule } from './patients/patients.module';
 import { DiagnosesModule } from './diagnoses/diagnoses.module';
 import { AdmissionsModule } from './admissions/admissions.module';
-import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { MedicationsModule } from './medications/medications.module'; // <-- AÑADIR
+import { MedicalIndicationsModule } from './medical-indications/medical-indications.module'; // <-- AÑADIR
 
 @Module({
   imports: [
     // Módulos de funcionalidades
     PatientsModule,
-    DiagnosesModule,   // <-- AÑADIR
-    AdmissionsModule,  // <-- AÑADIR
+    DiagnosesModule,
+    AdmissionsModule,
+    UsersModule,
+    AuthModule,
+    MedicationsModule,          // <-- AÑADIR
+    MedicalIndicationsModule,   // <-- AÑADIR
 
     // Módulo de Configuración
     ConfigModule.forRoot({
@@ -30,10 +36,6 @@ import { AuthModule } from './auth/auth.module';
       }),
       inject: [ConfigService],
     }),
-
-    UsersModule,
-
-    AuthModule,
   ],
   controllers: [],
   providers: [],

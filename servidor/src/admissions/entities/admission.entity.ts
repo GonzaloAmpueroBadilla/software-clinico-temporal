@@ -7,7 +7,9 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany, // <-- Importar OneToMany
 } from 'typeorm';
+import { MedicalIndication } from 'src/medical-indications/entities/medical-indication.entity'; // <-- Importar MedicalIndication
 
 @Entity('admissions')
 export class Admission {
@@ -20,15 +22,15 @@ export class Admission {
   @Column({ type: 'timestamptz', nullable: true })
   discharge_date: Date;
 
-  // --- RELACIÓN CON PACIENTES ---
-  // @ManyToOne: Muchas hospitalizaciones (@Many) pueden pertenecer a Un paciente (@ToOne).
   @ManyToOne(() => Patient, (patient) => patient.admissions)
-  // @JoinColumn: Especifica cuál es la columna de la llave foránea en esta tabla.
   @JoinColumn({ name: 'patient_id' })
-  patient: Patient; // Esta propiedad nos permitirá acceder a los datos del paciente (ej: admission.patient.name)
+  patient: Patient;
 
-  // --- RELACIÓN CON DIAGNÓSTICOS ---
   @ManyToOne(() => Diagnosis, (diagnosis) => diagnosis.admissions)
   @JoinColumn({ name: 'diagnosis_id' })
   diagnosis: Diagnosis;
+
+  // --- AÑADIR ESTA NUEVA PROPIEDAD ---
+  @OneToMany(() => MedicalIndication, (indication) => indication.admission)
+  medicalIndications: MedicalIndication[];
 }

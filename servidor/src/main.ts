@@ -9,7 +9,7 @@ async function bootstrap() {
     transform: true,
   }));
 
-  app.enableCors(); // Permite solicitudes desde otros orígenes (CORS)
+  app.enableCors();
 
   await app.listen(3000);
 }
