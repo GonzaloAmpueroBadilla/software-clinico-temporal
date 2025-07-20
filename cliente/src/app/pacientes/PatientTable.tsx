@@ -40,25 +40,25 @@ export default function PatientTable() {
             <TableCell>Acciones</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {patients.map((patient) => (
-            <TableRow key={patient.uuid}>
-              <TableCell>{patient.name}</TableCell>
-              <TableCell>{patient.rut}</TableCell>
-              <TableCell>{new Date(patient.birth_date).toLocaleDateString('es-CL')}</TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  component={Link}
-                  href={`/pacientes/${patient.uuid}`}
-                >
-                  Ver Detalles
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+  <TableBody>
+  {patients.map((patient: Patient) => (
+    <TableRow key={patient.uuid}>
+      <TableCell>{patient.name}</TableCell>
+      <TableCell>{patient.rut}</TableCell>
+      <TableCell>{new Date(patient.birth_date).toLocaleDateString('es-CL')}</TableCell>
+      <TableCell>
+        <Button
+          variant="outlined"
+          size="small"
+          component={Link}
+          href={`/pacientes/${patient.uuid}`}
+        >
+          Ver Detalles
+        </Button>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
       </Table>
     </TableContainer>
   );
