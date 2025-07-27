@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { PhysicalExam } from 'src/physical-exams/entities/physical-exam.entity';
+
 
 @Entity('users')
 export class User {
@@ -19,4 +21,7 @@ export class User {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @OneToMany(() => PhysicalExam, (exam) => exam.createdBy)
+  physicalExams: PhysicalExam[];
 }

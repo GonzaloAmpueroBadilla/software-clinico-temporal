@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity('progress_notes')
-export class ProgressNote { // <-- La palabra 'export' es crucial
+export class ProgressNote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { MedicationsModule } from './medications/medications.module'; // <-- AÑADIR
 import { MedicalIndicationsModule } from './medical-indications/medical-indications.module'; // <-- AÑADIR
 import { ProgressNotesModule } from './progress-notes/progress-notes.module';
+import { PhysicalExamsModule } from './physical-exams/physical-exams.module';
 
 
 @Module({
@@ -21,7 +22,8 @@ import { ProgressNotesModule } from './progress-notes/progress-notes.module';
     AuthModule,
     MedicationsModule,          
     MedicalIndicationsModule,
-    ProgressNotesModule,   
+    ProgressNotesModule,
+    PhysicalExamsModule,   
 
     // Módulo de Configuración
     ConfigModule.forRoot({
@@ -42,6 +44,8 @@ import { ProgressNotesModule } from './progress-notes/progress-notes.module';
     }),
 
     ProgressNotesModule,
+
+    PhysicalExamsModule,
   ],
   controllers: [],
   providers: [],

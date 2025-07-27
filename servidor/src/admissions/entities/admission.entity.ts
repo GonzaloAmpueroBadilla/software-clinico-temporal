@@ -1,5 +1,7 @@
 import { Patient } from 'src/patients/entities/patient.entity';
 import { Diagnosis } from 'src/diagnoses/entities/diagnosis.entity';
+import { PhysicalExam } from 'src/physical-exams/entities/physical-exam.entity'; 
+
 
 import {
   Entity,
@@ -34,5 +36,8 @@ export class Admission {
   // --- AÑADIR ESTA NUEVA PROPIEDAD ---
   @OneToMany(() => MedicalIndication, (indication) => indication.admission)
   medicalIndications: MedicalIndication[];
+
+  @OneToMany(() => PhysicalExam, (exam) => exam.admission)
+  physicalExams: PhysicalExam[];
   
 }
