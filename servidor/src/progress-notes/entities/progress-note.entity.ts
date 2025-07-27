@@ -1,5 +1,4 @@
 import { Admission } from 'src/admissions/entities/admission.entity';
-import { Medication } from 'src/medications/entities/medication.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -10,25 +9,20 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-@Entity('medical_indications')
-export class MedicalIndication {
+@Entity('progress_notes')
+export class ProgressNote { // <-- La palabra 'export' es crucial
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'text' })
-  instructions: string;
+  note: string;
 
   @CreateDateColumn()
   created_at: Date;
 
-  // --- RELACIONES ---
-  @ManyToOne(() => Admission, (admission) => admission.medicalIndications)
+  @ManyToOne(() => Admission)
   @JoinColumn({ name: 'admission_id' })
   admission: Admission;
-
-  @ManyToOne(() => Medication, (medication) => medication.indications)
-  @JoinColumn({ name: 'medication_id' })
-  medication: Medication;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })

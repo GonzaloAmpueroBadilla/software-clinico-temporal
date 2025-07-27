@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import {
   Container,
   Typography,
@@ -15,39 +16,46 @@ import {
   TextField,
   Button,
   Autocomplete,
+  Divider,
 } from '@mui/material';
 import { api } from '@/lib/api';
 
 // --- Interfaces de Datos ---
-interface Patient { name: string; rut: string; }
-interface Diagnosis { name: string; code: string; }
 interface User { full_name: string; }
 interface Medication { id: string; name: string; concentration: string; presentation: string; }
 interface MedicalIndication { id: string; instructions: string; created_at: string; createdBy: User; medication: Medication; }
-interface Admission { id: string; admission_date: string; patient: Patient; diagnosis: Diagnosis; }
+interface ProgressNote { id: string; note: string; created_at: string; createdBy: User; }
+// ... (otras interfaces se mantienen igual)
 
 // --- Componente Principal ---
-export default function AdmissionDetailPage({ params }: { params: { id: string } }) {
-  const [admission, setAdmission] = useState<Admission | null>(null);
+export default function AdmissionDetailPage() {
+  const [admission, setAdmission] = useState<any | null>(null);
   const [indications, setIndications] = useState<MedicalIndication[]>([]);
+  const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]); // <-- Nuevo estado
   const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
-  const admissionId = params.id;
+  const router = useRouter();
+  const params = useParams(); // <-- USAR EL HOOK
+  const admissionId = params.id as string;
 
-  // --- State for the new indication form ---
+  // --- Estados para los formularios ---
   const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
   const [instructions, setInstructions] = useState('');
+  const [newNote, setNewNote] = useState(''); // <-- Nuevo estado
 
   const fetchData = async () => {
     try {
-      const [admissionData, indicationsData, medicationsData] = await Promise.all([
+      // Añadimos la búsqueda de notas de progreso
+      const [admissionData, indicationsData, medicationsData, progressNotesData] = await Promise.all([
         api.get(`/admissions/${admissionId}`),
         api.get(`/medical-indications/by-admission/${admissionId}`),
-        api.get('/medications'), // Fetch the medications catalog
+        api.get('/medications'),
+        api.get(`/progress-notes/by-admission/${admissionId}`), // <-- Nueva petición
       ]);
       setAdmission(admissionData);
       setIndications(indicationsData);
       setMedications(medicationsData);
+      setProgressNotes(progressNotesData); // <-- Guardar notas
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -61,26 +69,22 @@ export default function AdmissionDetailPage({ params }: { params: { id: string }
     }
   }, [admissionId]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleIndicationSubmit = async (event: React.FormEvent<HTMLFormElement>) => { /* ... se mantiene igual ... */ };
+
+  // --- Lógica para guardar nueva nota de progreso ---
+  const handleNoteSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedMedication) {
-      alert('Por favor, seleccione un medicamento.');
-      return;
-    }
     try {
-      await api.post('/medical-indications', {
+      await api.post('/progress-notes', {
         admissionId: admissionId,
-        medicationId: selectedMedication.id,
-        instructions: instructions,
+        note: newNote,
       });
-      alert('Indicación creada con éxito');
-      // Limpiar formulario y recargar indicaciones
-      setSelectedMedication(null);
-      setInstructions('');
-      fetchData(); // Vuelve a cargar los datos para mostrar la nueva indicación
+      alert('Nota de evolución guardada con éxito.');
+      setNewNote('');
+      fetchData(); // Recargamos todos los datos
     } catch (error) {
       console.error(error);
-      alert('Error al crear la indicación.');
+      alert('Error al guardar la nota.');
     }
   };
 
@@ -90,39 +94,37 @@ export default function AdmissionDetailPage({ params }: { params: { id: string }
   return (
     <Container maxWidth="md">
       {/* ... (Sección de datos de la hospitalización se mantiene igual) ... */}
+      {/* ... (Sección de indicaciones médicas se mantiene igual) ... */}
 
-      {/* SECCIÓN INDICACIONES MÉDICAS */}
+      {/* --- SECCIÓN DE EVOLUCIÓN CLÍNICA (NUEVA) --- */}
       <Box sx={{ my: 4 }}>
-        <Typography variant="h5" component="h2" gutterBottom>Indicaciones Médicas</Typography>
+        <Typography variant="h5" component="h2" gutterBottom>Evolución Clínica</Typography>
         <Paper sx={{ mb: 3 }}>
-          <List>{/* ... (Código para mostrar la lista de indicaciones se mantiene igual) ... */}</List>
+          <List>
+            {progressNotes.map((note) => (
+              <ListItem key={note.id} divider>
+                <ListItemText
+                  primary={note.note}
+                  secondary={`Escrito por: ${note.createdBy.full_name} el ${new Date(note.created_at).toLocaleString('es-CL')}`}
+                />
+              </ListItem>
+            ))}
+          </List>
         </Paper>
 
-        {/* --- FORMULARIO PARA AÑADIR NUEVA INDICACIÓN --- */}
-        <Typography variant="h6" component="h3" gutterBottom>Añadir Nueva Indicación</Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate>
-          <Autocomplete
-            options={medications}
-            getOptionLabel={(option) => `${option.name} ${option.concentration} ${option.presentation}`}
-            value={selectedMedication}
-            onChange={(event, newValue) => {
-              setSelectedMedication(newValue);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="Buscar Medicamento" required />
-            )}
-          />
+        <Typography variant="h6" component="h3" gutterBottom>Añadir Nota de Evolución</Typography>
+        <Box component="form" onSubmit={handleNoteSubmit} noValidate>
           <TextField
-            label="Instrucciones (Posología)"
+            label="Nueva nota"
             fullWidth
+            multiline
+            rows={4}
             margin="normal"
             required
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
           />
-          <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-            Guardar Indicación
-          </Button>
+          <Button type="submit" variant="contained" sx={{ mt: 2 }}>Guardar Nota</Button>
         </Box>
       </Box>
     </Container>

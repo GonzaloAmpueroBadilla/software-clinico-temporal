@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MedicationsModule } from './medications/medications.module'; // <-- AÑADIR
 import { MedicalIndicationsModule } from './medical-indications/medical-indications.module'; // <-- AÑADIR
+import { ProgressNotesModule } from './progress-notes/progress-notes.module';
+
 
 @Module({
   imports: [
@@ -17,8 +19,9 @@ import { MedicalIndicationsModule } from './medical-indications/medical-indicati
     AdmissionsModule,
     UsersModule,
     AuthModule,
-    MedicationsModule,          // <-- AÑADIR
-    MedicalIndicationsModule,   // <-- AÑADIR
+    MedicationsModule,          
+    MedicalIndicationsModule,
+    ProgressNotesModule,   
 
     // Módulo de Configuración
     ConfigModule.forRoot({
@@ -33,9 +36,12 @@ import { MedicalIndicationsModule } from './medical-indications/medical-indicati
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
         synchronize: true,
+        logging: true,
       }),
       inject: [ConfigService],
     }),
+
+    ProgressNotesModule,
   ],
   controllers: [],
   providers: [],

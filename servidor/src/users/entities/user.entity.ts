@@ -1,5 +1,4 @@
-import { MedicalIndication } from 'src/medical-indications/entities/medical-indication.entity'; // <-- Importar
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm'; // <-- Añadir OneToMany
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -20,8 +19,4 @@ export class User {
 
   @CreateDateColumn()
   created_at: Date;
-
-  // --- AÑADIR ESTA NUEVA PROPIEDAD ---
-  @OneToMany(() => MedicalIndication, (indication) => indication.createdBy)
-  medicalIndications: MedicalIndication[];
 }

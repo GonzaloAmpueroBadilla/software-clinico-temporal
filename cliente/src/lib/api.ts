@@ -6,7 +6,7 @@ async function request(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('authToken');
 
   // Creamos un objeto Headers a partir de las opciones iniciales
-  const headers = new Headers(options.headers);
+  const headers = new Headers(options?.headers);
   // Añadimos siempre el Content-Type para peticiones con cuerpo
   if (options.body) {
     headers.set('Content-Type', 'application/json');
@@ -26,7 +26,11 @@ async function request(endpoint: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || 'Error en la petición a la API');
+    let errorMessage = 'Error en la petición a la API';
+    if (errorData && errorData.message) {
+      errorMessage = errorData.message;
+    }
+    throw new Error(errorMessage);
   }
 
   const contentType = response.headers.get("content-type");

@@ -1,131 +1,93 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
   Box,
   Button,
+  Autocomplete,
+  TextField,
   CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
 } from '@mui/material';
-import Link from 'next/link';
 import { api } from '@/lib/api';
+// Ajusta la ruta según la ubicación real del archivo Diagnosis
+import type { Diagnosis } from '@/types'; // Cambia la ruta según corresponda
 
-// --- Interfaces de Datos ---
-interface Patient {
-  id: number;
-  uuid: string;
-  name: string;
-  rut: string;
-}
-interface Diagnosis {
-  code: string;
-  name: string;
-}
-interface Admission {
-  id: string;
-  admission_date: string;
-  discharge_date: string | null;
-  diagnosis: Diagnosis;
-}
-
-export default function PatientDetailPage({ params }: { params: { id: string } }) {
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [admissions, setAdmissions] = useState<Admission[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function NuevaAdmisionPage() {
   const router = useRouter();
-  const patientUuid = params.id;
+  const params = useParams();
+  const patientId = params.id as string; // UUID del paciente
+
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<Diagnosis | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!patientUuid) return;
+    const fetchDiagnoses = async () => {
       try {
-        const patientData = await api.get(`/patients/${patientUuid}`);
-        setPatient(patientData);
-
-        if (patientData) {
-          const admissionsData = await api.get(`/admissions/by-patient/${patientData.id}`);
-          setAdmissions(admissionsData);
-        }
+        const data = await api.get('/diagnoses');
+        setDiagnoses(data);
       } catch (error) {
-        console.error("Error al buscar los datos:", error);
+        console.error("Error al buscar diagnósticos:", error);
       } finally {
         setLoading(false);
       }
     };
+    fetchDiagnoses();
+  }, []);
 
-    fetchData();
-  }, [patientUuid]);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedDiagnosis) {
+      alert('Por favor, seleccione un diagnóstico.');
+      return;
+    }
+
+    try {
+      await api.post('/admissions', {
+        patientId: patientId, // Enviamos el UUID del paciente
+        diagnosisId: selectedDiagnosis.id,
+      });
+
+      alert('Hospitalización creada con éxito');
+      router.push(`/pacientes/${patientId}`); // Vuelve a la página de detalles
+    } catch (error) {
+      console.error("Error al crear la hospitalización:", error);
+      alert('Hubo un error al crear la hospitalización.');
+    }
+  };
 
   if (loading) {
     return <Container sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Container>;
   }
 
-  if (!patient) {
-    return <Container><Typography>Paciente no encontrado o acceso no autorizado.</Typography></Container>;
-  }
-
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
+    <Container maxWidth="sm">
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Ficha del Paciente
-        </Typography>
-        <Card>
-          <CardContent>
-            <Typography variant="h6">Nombre: {patient.name}</Typography>
-            <Typography color="text.secondary">RUT: {patient.rut}</Typography>
-          </CardContent>
-        </Card>
-        <Button
-          variant="contained"
-          sx={{ mt: 2 }}
-          component={Link}
-          href={`/pacientes/${patient.uuid}/admision/nueva`}
-        >
           Iniciar Nueva Hospitalización
-        </Button>
-      </Box>
-
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Historial de Hospitalizaciones
         </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Fecha de Ingreso</TableCell>
-                <TableCell>Diagnóstico Principal</TableCell>
-                <TableCell>Fecha de Alta</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {admissions.map((admission) => (
-                <TableRow
-                  key={admission.id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => router.push(`/admissions/${admission.id}`)}
-                >
-                  <TableCell>{new Date(admission.admission_date).toLocaleString('es-CL')}</TableCell>
-                  <TableCell>{admission.diagnosis.name} ({admission.diagnosis.code})</TableCell>
-                  <TableCell>{admission.discharge_date ? new Date(admission.discharge_date).toLocaleString('es-CL') : 'N/A'}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Typography sx={{ mb: 2 }}>
+          Para el paciente con ID: {patientId}
+        </Typography>
+        
+        <Autocomplete
+          options={diagnoses}
+          getOptionLabel={(option) => `${option.code} - ${option.name}`}
+          onChange={(event, newValue) => {
+            setSelectedDiagnosis(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Buscar Diagnóstico de Ingreso" margin="normal" required />
+          )}
+        />
+        
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+          Guardar Hospitalización
+        </Button>
       </Box>
     </Container>
   );

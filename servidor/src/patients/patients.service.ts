@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
@@ -7,42 +7,48 @@ import { Patient } from './entities/patient.entity';
 
 @Injectable()
 export class PatientsService {
-  // El constructor "inyecta" el Repositorio de Pacientes.
-  // Piensa en 'patientRepository' como un objeto con superpoderes
-  // para acceder a la tabla 'patients'.
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
   ) {}
 
-  // --- CREAR UN PACIENTE ---
   create(createPatientDto: CreatePatientDto) {
-    // 1. Crea una instancia de la entidad Patient con los datos del DTO.
     const patient = this.patientRepository.create(createPatientDto);
-    // 2. Guarda esa instancia en la base de datos.
     return this.patientRepository.save(patient);
   }
 
-  // --- OBTENER TODOS LOS PACIENTES ---
   findAll() {
-    // Busca y devuelve todos los registros de la tabla.
     return this.patientRepository.find();
   }
 
-  // --- OBTENER UN PACIENTE POR SU ID ---
-  findOne(uuid: string) { // Ahora recibe un string (el uuid)
-  return this.patientRepository.findOneBy({ uuid }); // Busca por la columna uuid
+  async findOne(uuid: string) {
+    const patient = await this.patientRepository.findOneBy({ uuid });
+    if (!patient) {
+      throw new NotFoundException(`Paciente con uuid ${uuid} no encontrado`);
+    }
+    return patient;
   }
 
-  // --- ACTUALIZAR UN PACIENTE ---
-  update(id: string, updatePatientDto: UpdatePatientDto) {
-    // Actualiza los campos del paciente que coincida con el id.
-    return this.patientRepository.update(id, updatePatientDto);
+  async update(uuid: string, updatePatientDto: UpdatePatientDto) {
+    // Verificamos que el objeto de actualización no venga vacío
+    if (Object.keys(updatePatientDto).length === 0) {
+      return this.findOne(uuid); // Si no hay nada, devolvemos el original
+    }
+    
+    // TypeORM usa el primer argumento como criterio de búsqueda.
+    // Aquí le decimos que busque por 'uuid'.
+    await this.patientRepository.update({ uuid }, updatePatientDto);
+    
+    // Devolvemos el paciente actualizado
+    return this.findOne(uuid);
   }
 
-  // --- ELIMINAR UN PACIENTE ---
-  remove(id: string) {
-    // Elimina un paciente que coincida con el id.
-    return this.patientRepository.delete(id);
+  async remove(uuid: string) {
+    // Usamos el uuid para encontrar y eliminar el registro
+    const result = await this.patientRepository.delete({ uuid });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Paciente con uuid ${uuid} no encontrado`);
+    }
+    return result;
   }
 }

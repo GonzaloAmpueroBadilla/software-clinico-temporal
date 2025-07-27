@@ -1,5 +1,6 @@
 import { Patient } from 'src/patients/entities/patient.entity';
 import { Diagnosis } from 'src/diagnoses/entities/diagnosis.entity';
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -33,4 +34,5 @@ export class Admission {
   // --- AÑADIR ESTA NUEVA PROPIEDAD ---
   @OneToMany(() => MedicalIndication, (indication) => indication.admission)
   medicalIndications: MedicalIndication[];
+  
 }

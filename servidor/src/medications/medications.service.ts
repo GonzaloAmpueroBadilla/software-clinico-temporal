@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMedicationDto } from './dto/create-medication.dto';
@@ -21,15 +21,27 @@ export class MedicationsService {
     return this.medicationRepository.find();
   }
 
-  findOne(id: string) {
-    return this.medicationRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const medication = await this.medicationRepository.findOneBy({ id });
+    if (!medication) {
+      throw new NotFoundException(`Medicamento con id ${id} no encontrado`);
+    }
+    return medication;
   }
 
-  update(id: string, updateMedicationDto: UpdateMedicationDto) {
-    return this.medicationRepository.update(id, updateMedicationDto);
+  async update(id: string, updateMedicationDto: UpdateMedicationDto) {
+    if (Object.keys(updateMedicationDto).length === 0) {
+      return this.findOne(id);
+    }
+    await this.medicationRepository.update(id, updateMedicationDto);
+    return this.findOne(id);
   }
 
-  remove(id: string) {
-    return this.medicationRepository.delete(id);
+  async remove(id: string) {
+    const result = await this.medicationRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Medicamento con id ${id} no encontrado`);
+    }
+    return result;
   }
 }

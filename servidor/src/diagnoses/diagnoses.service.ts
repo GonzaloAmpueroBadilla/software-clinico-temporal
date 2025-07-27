@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDiagnosisDto } from './dto/create-diagnosis.dto';
@@ -21,15 +21,28 @@ export class DiagnosesService {
     return this.diagnosisRepository.find();
   }
 
-  findOne(id: string) {
-    return this.diagnosisRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const diagnosis = await this.diagnosisRepository.findOneBy({ id });
+    if (!diagnosis) {
+      throw new NotFoundException(`Diagnóstico con id ${id} no encontrado`);
+    }
+    return diagnosis;
   }
 
-  update(id: string, updateDiagnosisDto: UpdateDiagnosisDto) {
-    return this.diagnosisRepository.update(id, updateDiagnosisDto);
+  async update(id: string, updateDiagnosisDto: UpdateDiagnosisDto) {
+    // Verificamos que el objeto de actualización no venga vacío
+    if (Object.keys(updateDiagnosisDto).length === 0) {
+      return this.findOne(id);
+    }
+    await this.diagnosisRepository.update(id, updateDiagnosisDto);
+    return this.findOne(id);
   }
 
-  remove(id: string) {
-    return this.diagnosisRepository.delete(id);
+  async remove(id: string) {
+    const result = await this.diagnosisRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Diagnóstico con id ${id} no encontrado`);
+    }
+    return result;
   }
 }

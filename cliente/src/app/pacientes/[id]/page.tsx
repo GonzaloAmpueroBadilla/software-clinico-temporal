@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   Container,
   Typography,
@@ -39,12 +39,13 @@ interface Admission {
   diagnosis: Diagnosis;
 }
 
-export default function PatientDetailPage({ params }: { params: { id: string } }) {
+export default function PatientDetailPage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const patientUuid = params.id;
+  const params = useParams();
+  const patientUuid = params.id as string;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +69,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
   }, [patientUuid]);
 
   if (loading) {
-    return <Container sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Container>;
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+        <CircularProgress />
+      </Container>
+    );
   }
 
   if (!patient) {
