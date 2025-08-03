@@ -10,6 +10,8 @@ import { MedicationsModule } from './medications/medications.module'; // <-- AÑ
 import { MedicalIndicationsModule } from './medical-indications/medical-indications.module'; // <-- AÑADIR
 import { ProgressNotesModule } from './progress-notes/progress-notes.module';
 import { PhysicalExamsModule } from './physical-exams/physical-exams.module';
+import { VitalSignsModule } from './vital-signs/vital-signs.module';
+
 
 
 @Module({
@@ -23,7 +25,8 @@ import { PhysicalExamsModule } from './physical-exams/physical-exams.module';
     MedicationsModule,          
     MedicalIndicationsModule,
     ProgressNotesModule,
-    PhysicalExamsModule,   
+    PhysicalExamsModule,
+    VitalSignsModule,   
 
     // Módulo de Configuración
     ConfigModule.forRoot({
@@ -46,6 +49,8 @@ import { PhysicalExamsModule } from './physical-exams/physical-exams.module';
     ProgressNotesModule,
 
     PhysicalExamsModule,
+
+    VitalSignsModule,
   ],
   controllers: [],
   providers: [],
