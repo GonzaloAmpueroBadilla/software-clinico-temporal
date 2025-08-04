@@ -41,7 +41,7 @@ import { VitalSignsModule } from './vital-signs/vital-signs.module';
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
         synchronize: true,
-        logging: true,
+        logging: false,
       }),
       inject: [ConfigService],
     }),

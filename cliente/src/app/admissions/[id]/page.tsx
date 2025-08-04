@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   Container, Typography, Box, CircularProgress, Card, CardContent, List, ListItem, ListItemText, Paper, TextField, Button, Autocomplete, Divider, Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio
 } from '@mui/material';
@@ -159,6 +160,15 @@ export default function AdmissionDetailPage() {
             <Typography color="text.secondary">Diagnóstico: {admission.diagnosis.name} ({admission.diagnosis.code})</Typography>
           </CardContent>
         </Card>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+            component={Link}
+            href={`/admissions/${admissionId}/epicrisis`}
+          >
+            Generar Epicrisis
+          </Button>
       </Box>
       
       <Divider sx={{ my: 4 }} />

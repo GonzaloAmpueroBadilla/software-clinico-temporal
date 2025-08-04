@@ -2,6 +2,8 @@ import { Patient } from 'src/patients/entities/patient.entity';
 import { Diagnosis } from 'src/diagnoses/entities/diagnosis.entity';
 import { PhysicalExam } from 'src/physical-exams/entities/physical-exam.entity'; 
 import { VitalSign } from 'src/vital-signs/entities/vital-sign.entity';
+import { ProgressNote } from 'src/progress-notes/entities/progress-note.entity';
+import { MedicalIndication } from 'src/medical-indications/entities/medical-indication.entity';
 
 import {
   Entity,
@@ -10,9 +12,8 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
-  OneToMany, // <-- Importar OneToMany
+  OneToMany,
 } from 'typeorm';
-import { MedicalIndication } from 'src/medical-indications/entities/medical-indication.entity'; // <-- Importar MedicalIndication
 
 @Entity('admissions')
 export class Admission {
@@ -33,12 +34,15 @@ export class Admission {
   @JoinColumn({ name: 'diagnosis_id' })
   diagnosis: Diagnosis;
 
-  // --- AÑADIR ESTA NUEVA PROPIEDAD ---
   @OneToMany(() => MedicalIndication, (indication) => indication.admission)
   medicalIndications: MedicalIndication[];
 
   @OneToMany(() => PhysicalExam, (exam) => exam.admission)
   physicalExams: PhysicalExam[];
 
-  
+  @OneToMany(() => ProgressNote, (note) => note.admission)
+  progressNotes: ProgressNote[];
+
+  @OneToMany(() => VitalSign, (vitalSign) => vitalSign.admission)
+  vitalSigns: VitalSign[];
 }

@@ -40,4 +40,10 @@ findByPatient(@Param('patientId') patientId: string) {
   remove(@Param('id') id: string) {
     return this.admissionsService.remove(id);
   }
+
+  // --- GENERAR EPICRISIS ---
+@Get(':id/epicrisis')
+generateEpicrisis(@Param('id') id: string) {
+  return this.admissionsService.generateEpicrisis(id);
+}
 }
