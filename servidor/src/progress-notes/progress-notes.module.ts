@@ -8,5 +8,6 @@ import { ProgressNote } from './entities/progress-note.entity';
   imports: [TypeOrmModule.forFeature([ProgressNote])],
   controllers: [ProgressNotesController],
   providers: [ProgressNotesService],
+  exports: [TypeOrmModule],
 })
 export class ProgressNotesModule {}
